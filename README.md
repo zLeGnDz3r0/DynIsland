@@ -21,6 +21,36 @@ JavaScript nativo**. Sin Electron, frameworks de frontend ni bundler.
 La ventana transparente permanece encima de otras ventanas, adapta su tamaño
 al estado de la interfaz y permite reorganizar los widgets.
 
+## Capturas
+
+Capturas de la **interfaz real renderizada en Chromium**, con datos ficticios
+de música, tareas, archivos y estado del sistema. Muestran el frontend del
+proyecto en previsualización; no representan una sesión nativa de Windows o
+Linux ni validan sus integraciones.
+
+**Vista compacta**
+
+![Vista compacta con datos ficticios](docs/screenshots/pill.png)
+
+**Música — tema y portada ficticios**
+
+![Widget de música con una pista de demostración](docs/screenshots/music.png)
+
+| Focus Timer — sesión de ejemplo | Water — progreso ficticio |
+| --- | --- |
+| ![Temporizador de concentración](docs/screenshots/pomodoro.png) | ![Registro de agua](docs/screenshots/water.png) |
+
+| Shelf — archivos de demostración | Tasks — tareas ficticias |
+| --- | --- |
+| ![Archivos temporales de demostración](docs/screenshots/shelf.png) | ![Lista de tareas ficticias](docs/screenshots/todo.png) |
+
+**Ajustes — orden y tamaño de páginas**
+
+![Ajustes del orden de páginas](docs/screenshots/settings.png)
+
+Las capturas se pueden regenerar con `tools/capture-screenshots.mjs`; consulta
+la [procedencia y las instrucciones](docs/screenshots/README.md).
+
 ## Compilar y ejecutar
 
 ### Windows
