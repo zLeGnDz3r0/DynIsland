@@ -1,0 +1,28 @@
+/* Vista orden de páginas */
+.order-page { display: flex; flex-direction: column; gap: 12px; height: 100%; padding: 6px 2px; }
+.order-hint { font-size: 12px; color: var(--fg-dim); }
+.order-list { list-style: none; display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
+.order-item {
+  display: grid; grid-template-columns: 1fr 28px 56px 56px; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: 12px; background: rgba(255,255,255,.05); font-size: 14px;
+}
+.order-name { font-weight: 600; }
+.order-pos { color: var(--fg-dim); font-size: 12px; text-align: right; }
+.order-item .btn { padding: 5px 10px; font-size: 13px; }
+.order-item .btn:disabled { opacity: .3; cursor: default; }
+.order-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.size-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.05);
+}
+.size-label { font-size: 13px; font-weight: 600; }
+.size-btns { display: flex; gap: 6px; }
+.size-btn {
+  padding: 6px 12px; border-radius: 10px; font-size: 12.5px; font-weight: 600;
+  background: rgba(255,255,255,.08); color: var(--fg);
+  transition: background .15s ease, transform .1s ease;
+}
+.size-btn:hover { background: rgba(255,255,255,.16); }
+.size-btn:active { transform: scale(.95); }
+.size-btn.on { background: var(--fg); color: #111; }
+.size-hint { font-size: 11px; color: var(--fg-dim); flex-basis: 100%; }

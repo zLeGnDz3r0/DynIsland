@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "targets": ["deb", "appimage"],
+    "category": "Utility",
+    "shortDescription": "A desktop island for music, focus, tasks and temporary files",
+    "linux": {
+      "deb": {
+        "depends": ["playerctl", "coreutils", "xdg-utils"]
+      }
+    }
+  }
+}

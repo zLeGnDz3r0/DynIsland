@@ -1,0 +1,140 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  frontend:
+    name: Frontend checks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Check JavaScript syntax
+        run: node tools/check-syntax.mjs
+      - name: Test local preview server
+        run: node tools/verify-preview.mjs
+
+  windows:
+    name: Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: windows-cargo-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: windows-cargo-
+      - name: Test backend
+        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Build release executable
+        run: cargo build --release --locked --manifest-path src-tauri/Cargo.toml
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: dynisland-windows-x64-${{ github.sha }}
+          path: src-tauri/target/release/dynisland.exe
+          if-no-files-found: error
+          retention-days: 14
+
+  ubuntu:
+    name: Ubuntu 22.04 x64 packages
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      APPIMAGE_EXTRACT_AND_RUN: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install Linux build and runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential curl wget file pkg-config libssl-dev \
+            libwebkit2gtk-4.1-dev libxdo-dev libayatana-appindicator3-dev \
+            librsvg2-dev patchelf libfuse2 playerctl coreutils xdg-utils \
+            xvfb xauth dbus-x11 xdotool fonts-dejavu-core
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ubuntu-22.04-cargo-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: ubuntu-22.04-cargo-
+      - name: Test backend
+        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Install Tauri 2 CLI
+        run: cargo install tauri-cli --version '^2' --locked
+      - name: Build Debian and AppImage packages
+        working-directory: src-tauri
+        run: cargo tauri build --bundles deb,appimage -- --locked
+      - name: Smoke test X11 window startup
+        run: dbus-run-session -- xvfb-run -a bash .github/scripts/smoke-linux.sh
+      - name: Upload Linux packages
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: dynisland-linux-x64-${{ github.sha }}
+          path: |
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Linux startup log on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: dynisland-linux-startup-log-${{ github.sha }}
+          path: ${{ runner.temp }}/dynisland-smoke.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+  debian:
+    name: Debian 12 x64 compatibility
+    runs-on: ubuntu-22.04
+    container: rust:1-bookworm
+    timeout-minutes: 45
+    steps:
+      - name: Install Debian build and runtime dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates git build-essential curl wget file pkg-config libssl-dev \
+            libwebkit2gtk-4.1-dev libxdo-dev libayatana-appindicator3-dev \
+            librsvg2-dev playerctl coreutils xdg-utils
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Test backend on Debian
+        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Check application on Debian
+        run: cargo check --locked --manifest-path src-tauri/Cargo.toml

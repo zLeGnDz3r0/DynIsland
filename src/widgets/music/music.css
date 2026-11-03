@@ -1,0 +1,20 @@
+/* Widget música */
+.music { display: flex; gap: 18px; height: 100%; align-items: center; padding: 8px 6px; overflow: hidden; }
+.music .cover {
+  width: 170px; height: 170px; border-radius: 16px; object-fit: cover; flex: none;
+  background: linear-gradient(135deg, #2b2b35, #3d2b3f);
+  box-shadow: 0 8px 24px rgba(0,0,0,.45);
+}
+/* min-width: 0 es CRÍTICO: sin él, un título largo sin saltos expande la
+   columna y empuja los botones fuera del panel por la derecha. */
+.music .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.music .date { font-size: 11px; color: var(--fg-dim); text-transform: capitalize; }
+.music .title { font-size: 19px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.music .artist { font-size: 13px; color: var(--fg-dim); }
+.music .bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,.12); margin-top: 8px; overflow: hidden; }
+.music .bar-fill { height: 100%; width: 0; background: var(--fg); border-radius: 2px; transition: width 1s linear; }
+.music .times { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+.music .controls { display: flex; gap: 16px; justify-content: center; margin-top: 10px; align-items: center; }
+.music .icon-btn.big { width: 56px; height: 56px; background: #fff; color: #111; }
+.music .icon-btn.big .ic { width: 30px; height: 30px; }
+.music .icon-btn.big:hover { background: #e8e8ed; }

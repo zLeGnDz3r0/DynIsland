@@ -1,0 +1,24 @@
+/* Widget tareas */
+.todo { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 6px 4px; }
+.todo-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--fg-dim); }
+.todo-actions { display: flex; gap: 8px; }
+.todo-actions .btn { display: inline-flex; align-items: center; gap: 6px; }
+.todo-actions .ic { width: 15px; height: 15px; }
+.todo-form { display: flex; gap: 8px; }
+.todo-form input {
+  flex: 1; background: rgba(255,255,255,.08); border: none; border-radius: 10px;
+  color: var(--fg); padding: 8px 12px; font: inherit; outline: none;
+}
+.todo-form input:focus { background: rgba(255,255,255,.13); }
+.todo-list { list-style: none; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex: 1; }
+.todo-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-radius: 12px; background: rgba(255,255,255,.05); font-size: 14px;
+}
+.todo-item input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+.todo-item span { flex: 1; }
+.todo-item.done span { text-decoration: line-through; color: var(--fg-dim); }
+.todo-del { opacity: 0; color: var(--fg-dim); padding: 4px 6px; border-radius: 8px; display: grid; place-items: center; }
+.todo-del .ic { width: 16px; height: 16px; }
+.todo-item:hover .todo-del { opacity: 1; }
+.todo-del:hover { color: var(--accent); background: rgba(255,255,255,.08); }
